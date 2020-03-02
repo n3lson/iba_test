@@ -4,23 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.iba.test.utils.Constants.*;
 
-public class FileParser {
+public class FileParser extends Performer {
     private String filepath;
 
-    public FileParser(String arg) {
-        this.filepath = arg.substring(arg.indexOf(FILE_FLAG) + 1);
+    FileParser(String filepath) {
+        this.filepath = filepath;
     }
 
-    private List<String> getFileLines(String path) throws IOException {
-        return Files.lines(Paths.get(path))
-                    .flatMap(str -> Stream.of(str.split(Constants.NEW_LINE)))
-                    .collect(Collectors.toList());
+    private String getFileContent(String path) throws IOException {
+        return new String(Files.readAllBytes(Paths.get(path)));
     }
 
     private String[] getKeyAndValue(String line) {
@@ -33,16 +28,17 @@ public class FileParser {
         } else return null;
     }
 
-    public void parse() {
+    public void perform() {
         File fileIn = new File(filepath);
         if (!fileIn.isAbsolute()) {
             filepath = ROOT.concat(BACKSLASH).concat(filepath);
         }
         try {
             if (fileIn.exists()) {
+                String content = getFileContent(filepath);
+                String[] lines = content.split(NEW_LINE);
                 String[] keyAndValue;
                 StringBuilder output = new StringBuilder();
-                List<String> lines = getFileLines(filepath);
                 for (String line: lines) {
                     keyAndValue = getKeyAndValue(line);
                     if (keyAndValue != null) {
@@ -51,11 +47,13 @@ public class FileParser {
                               .append(keyAndValue[1])
                               .append(NEW_LINE);
                     } else {
-                        output.append(lines);
-                        break;
+                        Files.write(Paths.get(FILE_OUT), content.getBytes());
+                        return;
                     }
                 }
                 Files.write(Paths.get(FILE_OUT), output.toString().getBytes());
+            } else {
+                Files.write(Paths.get(FILE_ERR), "File not found.".getBytes());
             }
         } catch (IOException err) {
             try {

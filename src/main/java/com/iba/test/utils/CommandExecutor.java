@@ -2,16 +2,17 @@ package com.iba.test.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static com.iba.test.utils.Constants.*;
 
-public class CommandExecutor {
+public class CommandExecutor extends Performer {
     private String command;
 
-    public CommandExecutor(String[] args) {
+    CommandExecutor(String[] args) {
         this.command = parseCommand(args);
     }
 
@@ -33,19 +34,15 @@ public class CommandExecutor {
         return output.toString();
     }
 
-    private String getCommandOutput(Process proc) throws IOException {
-        return readInputStream(new BufferedReader(new InputStreamReader(proc.getInputStream())));
+    private String getCommand(InputStream in) throws IOException {
+        return readInputStream(new BufferedReader(new InputStreamReader(in)));
     }
 
-    private String getCommandError(Process proc) throws IOException {
-        return readInputStream(new BufferedReader(new InputStreamReader(proc.getErrorStream())));
-    }
-
-    public void execute() {
+    public void perform() {
         try {
             Process proc = new ProcessBuilder(CMD_EXE, CMD_ARG, command).start();
-            String output = getCommandOutput(proc);
-            String err = getCommandError(proc);
+            String output = getCommand(proc.getInputStream());
+            String err = getCommand(proc.getErrorStream());
             if (!output.equals(EMPTY_STRING)) {
                 Files.write(Paths.get(CMD_OUT), output.getBytes());
             } else if (!err.equals(EMPTY_STRING)) {

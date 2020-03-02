@@ -1,12 +1,9 @@
 package com.iba.test.utils;
 
-public class Constants {
-    public static final String PARSE_FILE_FLAG = "-f";
-    public static final String EXEC_CMD_FLAG = "-cmd";
-    public static final String READ_REGISTRY_FLAG = "-rk";
-
-    static final String FILE_FLAG = "f";
-    static final String REGISTRY_FLAG = "k";
+class Constants {
+    static final String PARSE_FILE_FLAG = "-f";
+    static final String EXEC_CMD_FLAG = "-cmd";
+    static final String READ_REGISTRY_FLAG = "-rk";
     static final String NEW_LINE = "\n";
     static final String DELIMITER = "=";
     static final String SPACE = " ";

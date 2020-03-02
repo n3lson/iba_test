@@ -9,25 +9,25 @@ import java.util.HashMap;
 
 import static com.iba.test.utils.Constants.*;
 
-public class RegistryReader {
+public class RegistryReader extends Performer {
     private String section;
     private String path;
     private String key;
 
-    public RegistryReader(String arg) {
+    RegistryReader(String path) {
         try {
-            String[] parsedPath = parseRegistryPath(arg.substring(arg.indexOf(REGISTRY_FLAG) + 1));
+            String[] parsedPath = parseRegistryPath(path);
             if (parsedPath != null) {
                 this.section = parsedPath[0];
                 this.path = parsedPath[1];
                 this.key = parsedPath[2];
             } else {
-                Files.write(Paths.get(RK_ERR), "Wrong argument passed.".getBytes());
+                Files.write(Paths.get(RK_ERR), "Wrong arguments passed.".getBytes());
             }
         } catch (StringIndexOutOfBoundsException e) {
             e.printStackTrace();
             try {
-                Files.write(Paths.get(RK_ERR), "Wrong argument passed".getBytes());
+                Files.write(Paths.get(RK_ERR), "Wrong arguments passed".getBytes());
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -59,7 +59,7 @@ public class RegistryReader {
         }
     }
 
-    public void read() {
+    public void perform() {
         HashMap<String, Integer> sections = getSections();
         try {
             String value = WinRegistryWrapper.WinRegQueryValueEx(sections.get(section), path, key);
